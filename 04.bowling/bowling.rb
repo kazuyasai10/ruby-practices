@@ -18,14 +18,9 @@ def make_frame_array_from_score(score)
              else
                s.to_i
              end
-    if frames[9] != NIL && frames[9][0] == TEN_POINTS && frames[9][1] == TEN_POINTS
+    if frames[9] != NIL && frames[9][0] == TEN_POINTS && frames[9][1] == TEN_POINTS || frames[9] != NIL && frames[9].sum == TEN_POINTS
       frames[9] << frame[0]
-    elsif frames[9] != NIL && frames[9].sum == TEN_POINTS
-      frames[9] << frame[0]
-    elsif frame.length == FIRST_PITCH && frame.first == TEN_POINTS # 1投目 && 10本倒れたときストライクの配列は次の行へ
-      frames << frame # framesにframeを代入
-      frame = [] # 次のフレームを定義
-    elsif frame.length == SECOND_PITCH # frameの配列の長さが２であれば、２投目を投げているので１frame終了.
+    elsif frame.length == FIRST_PITCH && frame.first == TEN_POINTS ||  frame.length == SECOND_PITCH # 1投目 && 10本倒れたときストライクの配列は次の行へ
       frames << frame # framesにframeを代入
       frame = [] # 次のフレームを定義
     end
