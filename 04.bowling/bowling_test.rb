@@ -22,7 +22,7 @@ class BowlingScoreTest < Minitest::Test
     assert_equal 139, calc_score([[6, 3], [9, 0], [0, 3], [8, 2], [7, 3], [10], [9, 1], [8, 0], [10], [6, 4, 5]])
   end
 
-  def test_calc_score_lastXXX
+  def test_calc_score_last_3strike
     assert_equal 164, calc_score([[6, 3], [9, 0], [0, 3], [8, 2], [7, 3], [10], [9, 1], [8, 0], [10], [10, 10, 10]])
   end
 end
