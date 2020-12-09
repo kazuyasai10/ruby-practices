@@ -21,35 +21,27 @@ def make_frame_array_from_score(score)
   frames
 end
 
+def make_last_frame; end
+
 def calc_score(frames)
   point = 0
   frames.each_with_index do |frame, index|
     if frames.last != frame
       if frames[8] != frame
 
-        if frame.first == TEN_POINTS
-          point += calc_turkey(frames,frame,index)
- 
-        elsif frame.length == SECOND_PITCH && frame.sum == TEN_POINTS # スペアの場合
-          point += 10
-          point += frames[index + 1].first
-        else
-          point += frame.sum
-        end
+        point += if frame.first == TEN_POINTS
+                   calc_turkey(frames, frame, index)
+
+                 elsif frame.length == SECOND_PITCH && frame.sum == TEN_POINTS # スペアの場合
+                   calc_spare(frames, index)
+                 else
+                   frame.sum
+                 end
 
       elsif frame.first == TEN_POINTS
-        point += if frame[0] == 10 && frames[index + 1][0] == 10 && frames[index + 1][1] == 10 # 3回連続ストライク
-                   30
-                 elsif frame[0] == 10 && frames[index + 1][0] == 10 # 2回連続ストライク
-                   20 + frames[index + 1][0]
-                 else
-                   10 + frames[index + 1].first + frames[index + 1][1].to_i
-                 end
+        point += calc_turkey_last(frames, frame, index)
       elsif frame.length == SECOND_PITCH && frame.sum == TEN_POINTS # スペアの場合
-        point += 10
-        break if frames[index + 1].nil?
-
-        point += frames[index + 1].first
+        calc_spare(frames, index)
       else
         point += frame.sum
 
@@ -62,14 +54,32 @@ def calc_score(frames)
   point
 end
 
-def calc_turkey(frames,frame,index)
-  point =0
-  if frame[0] == 10 && frames[index + 1][0] == 10 && frames[index + 2][0] == 10 # 3回連続ストライク
-    point +=30
-  elsif frame[0] == 10 && frames[index + 1][0] == 10 # 2回連続ストライク
-    point += 20 + frames[index + 2][0]
-  else
-    point += 10 + frames[index + 1].first + frames[index + 1][1].to_i
-    end
+def calc_turkey(frames, frame, index)
+  point = 0
+  point += if frame[0] == 10 && frames[index + 1][0] == 10 && frames[index + 2][0] == 10 # 3回連続ストライク
+             30
+           elsif frame[0] == 10 && frames[index + 1][0] == 10 # 2回連続ストライク
+             20 + frames[index + 2][0]
+           else
+             10 + frames[index + 1].first + frames[index + 1][1].to_i
+           end
   point
+end
+
+def calc_turkey_last(frames, frame, index)
+  point = 0
+  if point += if frame[0] == 10 && frames[index + 1][0] == 10 && frames[index + 1][1] == 10 # 3回連続ストライク
+                30
+              elsif frame[0] == 10 && frames[index + 1][0] == 10 # 2回連続ストライク
+                20 + frames[index + 1][0]
+              else
+                10 + frames[index + 1].first + frames[index + 1][1].to_i
+              end
+    point
+  end
+end
+
+def calc_spare(frames, index)
+  point = 0
+  point + TEN_POINTS + frames[index + 1].first
 end
