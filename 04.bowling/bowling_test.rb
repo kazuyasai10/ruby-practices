@@ -4,6 +4,7 @@ require 'minitest/autorun'
 require './bowling'
 
 class BowlingScoreTest < Minitest::Test
+  `ruby bowling.rb 0X90038273X9180X645`
   def test_make_frame_array_from_score1
     assert_equal [[0, 10], [9, 0], [0, 3], [8, 2], [7, 3], [10], [9, 1], [8, 0], [10], [6, 4, 5]], make_frame_array_from_score('0X90038273X9180X645')
   end
