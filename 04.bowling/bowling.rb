@@ -1,10 +1,17 @@
 # frozen_string_literal: true
 
-score = ARGV[0]
 
 TEN_POINTS = 10
 FIRST_PITCH = 1
 SECOND_PITCH = 2
+
+
+
+def  main
+score = ARGV[0]
+frames = make_frame_array_from_score(score)
+puts calc_score(frames)
+end
 
 def strike?(frame)
   frame.first == TEN_POINTS
@@ -98,5 +105,6 @@ def calc_score(frames)
   point
 end
 
-frames = make_frame_array_from_score(score)
-p calc_score(frames)
+if __FILE__ == $0
+  main
+end
