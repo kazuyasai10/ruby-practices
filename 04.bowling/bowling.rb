@@ -1,99 +1,95 @@
 # frozen_string_literal: true
 
-def main
-  score = ARGV[0]
-  frames = make_frame_array_from_score(score)
-  puts calc_score(frames)
+score = ARGV[0]
+
+def main(score)
+  total_frames = make_frame_array_from_score(score)
+  bowling_score = calc_score(total_frames)
+  puts bowling_score
+  bowling_score
 end
 
-def strike?(frame)
-  frame.first == 10
+def strike?(frames)
+  frames.first == 10
 end
 
-def spare?(frame)
-  frame.length == 2 && frame.sum == 10
+def spare?(frames)
+  frames.length == 2 && frames.sum == 10
 end
 
-def last_frame?(frames, _frame)
-  frames[9] != NIL && frames[9][0] == 10 && frames[9][1] == 10 || frames[9] != NIL && frames[9].sum == 10
+def last_frame?(total_frames)
+  !total_frames[9].nil? && total_frames[9][0] == 10 && total_frames[9][1] == 10 || !total_frames[9].nil? && total_frames[9].sum == 10
 end
 
 def make_frame_array_from_score(score)
+  total_frames = []
   frames = []
-  frame = []
   score.chars.each do |s|
-    frame << (s == 'X' ? 10 : s.to_i)
-    if last_frame?(frames, frame)
-      frames[9] << frame[0]
-    elsif strike?(frame) || frame.length == 2 #  ストライクまたは10本倒れたときス次の配列へ
-      frames << frame
-      frame = [] # 次のフレームを定義
+    frames << (s == 'X' ? 10 : s.to_i)
+    if last_frame?(total_frames)
+      total_frames[9] << frames[0]
+    elsif strike?(frames) || frames.length == 2
+      total_frames << frames
+      frames = [] # 次のフレームを定義
     end
   end
-  frames
+  total_frames
 end
 
-def calc_turkey(frames, frame, index)
-  point = 0
-  point += if strike?(frame) && frames[index + 1][0] == 10 && frames[index + 2][0] == 10 # 3回連続ストライク
-             30
-           elsif strike?(frame) && frames[index + 1][0] == 10 # 2回連続ストライク
-             20 + frames[index + 2][0]
-           else
-             10 + frames[index + 1].first + frames[index + 1][1].to_i
-           end
-  point
-end
-
-def calc_turkey_last(frames, frame, index)
-  point = 0
-  if point += if strike?(frame) && frames[index + 1][0] == 10 && frames[index + 1][1] == 10 # 3回連続ストライク
-                30
-              elsif frame[0] == 10 && frames[index + 1][0] == 10 # 2回連続ストライク
-                20 + frames[index + 1][0]
-              else
-                10 + frames[index + 1].first + frames[index + 1][1].to_i
-              end
-    point
+def calc_strike(total_frames, frames, index)
+  if strike?(frames) && total_frames[index + 1][0] == 10 && total_frames[index + 2][0] == 10
+    30
+  elsif strike?(frames) && total_frames[index + 1][0] == 10
+    20 + total_frames[index + 2][0]
+  else
+    10 + total_frames[index + 1][0] + total_frames[index + 1][1]
   end
 end
 
-def calc_spare(frames, index)
-  point = 0
-  point + 10 + frames[index + 1].first
+def calc_strike_last(total_frames, frames, index)
+  if strike?(frames) && total_frames[index + 1][0] == 10 && total_frames[index + 1][1] == 10
+    30
+  elsif strike?(frames) && total_frames[index + 1][0] == 10
+    20 + total_frames[index + 1][1]
+  else
+    10 + total_frames[index + 1][0] + total_frames[index + 1][1]
+  end
 end
 
-def calc_1_8_frame(frame, frames, index)
+def calc_spare(total_frames, index)
+  10 + total_frames[index + 1].first
+end
+
+def calc_1_8_frame(total_frames, frames, index)
   point = 0
   point +
-    if frames.last == frame
-      point + frame.sum
+    if total_frames.last == frames
+      point + frames.sum
 
-    elsif strike?(frame)
-      calc_turkey(frames, frame, index)
+    elsif strike?(frames)
+      calc_strike(total_frames, frames, index)
 
-    elsif spare?(frame) # スペアの場合
-      calc_spare(frames, index)
+    elsif spare?(frames)
+      calc_spare(total_frames, index)
     else
-      frame.sum
+      frames.sum
     end
 end
 
-def calc_score(frames)
+def calc_score(total_frames)
   point = 0
-  frames.each_with_index do |frame, index|
-    if frames[8] != frame
-      point += calc_1_8_frame(frame, frames, index)
-    elsif strike?(frame)
-      point += calc_turkey_last(frames, frame, index)
-    elsif  spare?(frame)
-      calc_spare(frames, index)
+  total_frames.each_with_index do |frames, index|
+    if total_frames[8] != frames
+      point += calc_1_8_frame(total_frames, frames, index)
+    elsif strike?(frames)
+      point += calc_strike_last(total_frames, frames, index)
+    elsif  spare?(frames)
+      calc_spare(total_frames, index)
     else
-      point += frame.sum
-
+      point += frames.sum
     end
   end
   point
 end
 
-main if __FILE__ == $0
+main(score) if __FILE__ == $0

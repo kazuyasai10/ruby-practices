@@ -27,4 +27,21 @@ class BowlingScoreTest < Minitest::Test
   def test_calc_score_last_3strike
     assert_equal 164, calc_score([[6, 3], [9, 0], [0, 3], [8, 2], [7, 3], [10], [9, 1], [8, 0], [10], [10, 10, 10]])
   end
+
+  def test_score
+    assert_equal 107, main('0X150000XXX518104')
+  end
+
+  def test_score_2
+    assert_equal 139, main('6390038273X9180X645')
+  end
+
+  def test_score_last_3strike
+    assert_equal 164, main('6390038273X9180XXXX')
+  end
+
+  def test_score_3
+    assert_equal 134, main('6390038273X9180XX00')
+  end
+
 end
