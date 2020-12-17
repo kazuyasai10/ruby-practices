@@ -77,5 +77,3 @@ def calc_score(total_frames)
 end
 
 main(score) if __FILE__ == 'bowling.rb'
-
-
