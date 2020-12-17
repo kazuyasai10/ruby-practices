@@ -17,27 +17,46 @@ def spare?(frames)
   frames.length == 2 && frames.sum == 10
 end
 
-def last_frame?(total_frames)
-  !total_frames[9].nil? && total_frames[9][0] == 10 && total_frames[9][1] == 10 || !total_frames[9].nil? && total_frames[9].sum == 10
-end
-
 def make_frame_array_from_score(score)
   total_frames = []
   frames = []
-  score.chars.each do |s|
-    frames << (s == 'X' ? 10 : s.to_i)
-    if last_frame?(total_frames)
-      total_frames[9] << frames[0]
-    elsif strike?(frames) || frames.length == 2
+  scores =  score.chars.map {|s| s == 'X' ? x=10 : s.to_i}
+  scores.each do |score|
+    frames << score
+    if total_frames.length > 9 
       total_frames << frames
-      frames = [] # 次のフレームを定義
+      frames = []
+  elsif strike?(frames) || frames.length == 2
+      total_frames << frames
+      frames = []
     end
+  end
+
+  total_frames.each_with_index do |frames,index|
+    if index > 9
+    total_frames[9] << frames
+    total_frames[9].flatten!
+    end
+
+    if index == 11
+      total_frames.delete_at(11)
+    end
+
+  end
+  if total_frames[10]
+    total_frames.pop
   end
   total_frames
 end
 
+
+
 def calc_strike(total_frames, frames, index)
-  if strike?(frames) && total_frames[index + 1][0] == 10 && total_frames[index + 2][0] == 10
+  if index == 8 #通常のストライクで計算するとtotal_frames[index + 2][0]がnilになってしまうため、９フレーム目のみcalc_strike_last関数を使用する。
+    calc_strike_last(total_frames, frames, index)
+  elsif index == 9
+    frames.sum
+  elsif strike?(frames) && total_frames[index + 1][0] == 10 && total_frames[index + 2][0] == 10
     30
   elsif strike?(frames) && total_frames[index + 1][0] == 10
     20 + total_frames[index + 2][0]
@@ -57,34 +76,16 @@ def calc_strike_last(total_frames, frames, index)
 end
 
 def calc_spare(total_frames, index)
-  10 + total_frames[index + 1].first
-end
-
-def calc_1_8_frame(total_frames, frames, index)
-  point = 0
-  point +
-    if total_frames.last == frames
-      point + frames.sum
-
-    elsif strike?(frames)
-      calc_strike(total_frames, frames, index)
-
-    elsif spare?(frames)
-      calc_spare(total_frames, index)
-    else
-      frames.sum
-    end
+  10 + total_frames[index + 1][0]
 end
 
 def calc_score(total_frames)
   point = 0
   total_frames.each_with_index do |frames, index|
-    if total_frames[8] != frames
-      point += calc_1_8_frame(total_frames, frames, index)
-    elsif strike?(frames)
-      point += calc_strike_last(total_frames, frames, index)
+    if strike?(frames)
+      point += calc_strike(total_frames, frames, index)
     elsif  spare?(frames)
-      calc_spare(total_frames, index)
+      point += calc_spare(total_frames, index)
     else
       point += frames.sum
     end
