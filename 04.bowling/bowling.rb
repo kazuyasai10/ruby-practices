@@ -2,8 +2,8 @@
 
 score = ARGV[0]
 
-def main(score)
-  total_frames = make_frame_array_from_score(score)
+def main(score_str)
+  total_frames = make_frame_array_from_score(score_str)
   bowling_score = calc_score(total_frames)
   puts bowling_score
   bowling_score
@@ -17,10 +17,10 @@ def spare?(frames)
   frames.length == 2 && frames.sum == 10
 end
 
-def make_frame_array_from_score(score)
+def make_frame_array_from_score(score_str)
   total_frames = []
   frames = []
-  scores = score.chars.map { |s| s == 'X' ? 10 : s.to_i }
+  scores = score_str.chars.map { |s| s == 'X' ? 10 : s.to_i }
   scores.each do |score|
     frames << score
     if total_frames.length > 9
@@ -35,7 +35,7 @@ def make_frame_array_from_score(score)
 end
 
 def calc_strike(total_frames, frames, index)
-  if index == 8 # 通常のストライクで計算するとtotal_frames[index + 2][0]がnilになってしまうため、９フレーム目のみcalc_strike_last関数を使用する。
+  if index == 8 # 通常のストライクで計算すると９フレーム目のみtotal_frames[index + 2][0]がnilになってしまうため、calc_strike_last関数を使用する。
     calc_strike_last(total_frames, frames, index)
   elsif index == 9
     frames.sum
@@ -76,4 +76,6 @@ def calc_score(total_frames)
   point
 end
 
-main(score) if __FILE__ == $0
+main(score) if __FILE__ == 'bowling.rb'
+
+

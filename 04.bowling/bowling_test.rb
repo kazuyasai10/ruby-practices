@@ -12,7 +12,7 @@ class BowlingScoreTest < Minitest::Test
     assert_equal 139, main('6390038273X9180X645')
   end
 
-  def test_score_last_3strike
+  def test_score_last_frames_3strike
     assert_equal 164, main('6390038273X9180XXXX')
   end
 
@@ -24,7 +24,7 @@ class BowlingScoreTest < Minitest::Test
     assert_equal 300, main('XXXXXXXXXXXX')
   end
 
-  def test_score_double
+  def test_score_double_strike_between_9_10frames
     assert_equal 143, main('6390038273X9180XX25')
   end
 end
