@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-score = ARGV[0]
+score_str = ARGV[0]
 
 def main(score_str)
   total_frames = make_frame_array_from_score(score_str)
@@ -76,4 +76,4 @@ def calc_score(total_frames)
   point
 end
 
-main(score) if __FILE__ == 'bowling.rb'
+main(score_str) if __FILE__ == 'bowling.rb'
