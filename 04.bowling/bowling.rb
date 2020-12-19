@@ -32,44 +32,16 @@ def make_frame_array_from_score(score_str)
   total_frames
 end
 
-def calc_strike(total_frames, frames, index)
-  if index == 8 # 通常のストライクで計算すると９フレーム目のみtotal_frames[index + 2][0]がnilになってしまうため、calc_strike_last関数を使用する。
-    calc_strike_last(total_frames, frames, index)
-  elsif index == 9
-    frames.sum
-  elsif strike?(frames) && total_frames[index + 1][0] == 10 && total_frames[index + 2][0] == 10
-    30
-  elsif strike?(frames) && total_frames[index + 1][0] == 10
-    20 + total_frames[index + 2][0]
-  else
-    10 + total_frames[index + 1][0] + total_frames[index + 1][1]
-  end
-end
-
-def calc_strike_last(total_frames, frames, index)
-  if strike?(frames) && total_frames[index + 1][0] == 10 && total_frames[index + 1][1] == 10
-    30
-  elsif strike?(frames) && total_frames[index + 1][0] == 10
-    20 + total_frames[index + 1][1]
-  else
-    10 + total_frames[index + 1][0] + total_frames[index + 1][1]
-  end
-end
-
-def calc_spare(total_frames, index)
-  10 + total_frames[index + 1][0]
-end
-
 def calc_score(total_frames)
-  point = 0
+  point = total_frames.sum([]).sum # 数字を単純に合計する。次の繰り返しでストライク、スペアのボーナスを加算する
   total_frames.each_with_index do |frames, index|
-    point += if strike?(frames)
-               calc_strike(total_frames, frames, index)
-             elsif spare?(frames)
-               calc_spare(total_frames, index)
-             else
-               frames.sum
-             end
+    next unless index != 9
+
+    if strike?(frames)
+      point += total_frames[index + 1][0]
+      point += total_frames[index + 1][1] || total_frames[index + 2][0]
+    end
+    point += total_frames[index + 1][0] if spare?(frames)
   end
   point
 end
