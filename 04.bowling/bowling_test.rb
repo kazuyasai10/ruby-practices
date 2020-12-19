@@ -28,3 +28,4 @@ class BowlingScoreTest < Minitest::Test
     assert_equal 143, main('6390038273X9180XX25')
   end
 end
+

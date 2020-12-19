@@ -47,3 +47,4 @@ def calc_score(total_frames)
 end
 
 puts main(score_str) if __FILE__ == $PROGRAM_NAME
+
