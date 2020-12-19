@@ -4,9 +4,7 @@ score_str = ARGV[0]
 
 def main(score_str)
   total_frames = make_frame_array_from_score(score_str)
-  bowling_score = calc_score(total_frames)
-  puts bowling_score
-  bowling_score
+  calc_score(total_frames)
 end
 
 def strike?(frames)
@@ -76,4 +74,4 @@ def calc_score(total_frames)
   point
 end
 
-main(score_str) if __FILE__ == $PROGRAM_NAME
+puts main(score_str) if __FILE__ == $PROGRAM_NAME
