@@ -76,4 +76,4 @@ def calc_score(total_frames)
   point
 end
 
-main(score_str) if __FILE__ == 'bowling.rb'
+main(score_str) if __FILE__ == $PROGRAM_NAME
