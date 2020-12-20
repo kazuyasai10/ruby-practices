@@ -47,4 +47,4 @@ def calc_score(total_frames)
   point
 end
 
-puts main(score_str) if __FILE__ == $PROGRAM_NAME
+puts main(score_str) if __FILE__ == $0
