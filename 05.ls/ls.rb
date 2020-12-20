@@ -1,26 +1,32 @@
 # frozen_string_literal: true
+
 require 'optparse'
 
-
 options = ARGV.getopts('alr')
-input = ARGV[0]
+path = ARGV[0] || '.' # 引数がなければ"."で現在のディレクトリを返す
 
-#puts input
-#puts options
-
-#ls-a
-if options["a"] 
-Dir.foreach('.').sort.each do |item|
-  puts item
+def main(path, options = '')
+  ruby_ls(path, options)
 end
 
-#ls
-else
-  Dir.foreach('.').sort.each do |item|
-    next if item == '.' or item == '..'
-    next if item.start_with?(".")
-    puts item
+# ls-a
+def ruby_ls(path, options = '')
+  items = []
+  if options['a']
+    Dir.foreach(path).sort.each do |item|
+      items << item
+    end
+
+  # ls
+  else
+    Dir.foreach(path).sort.each do |item|
+      next if (item == '.') || (item == '..')
+      next if item.start_with?('.')
+
+      items << item
+    end
   end
+  items
 end
 
-puts fs.mode
+puts main(path, options) if __FILE__ == $PROGRAM_NAME
