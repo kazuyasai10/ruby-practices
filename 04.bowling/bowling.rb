@@ -35,11 +35,13 @@ end
 def calc_score(total_frames)
   point = total_frames.sum([]).sum # 数字を単純に合計する。次の繰り返しでストライク、スペアのボーナスを加算する
   total_frames.first(9).each_with_index do |frames, index| # 合算のみの最後のフレームは対象外
+    next_frame = total_frames[index + 1]
+    second_next_frame = total_frames[index + 2]
     if strike?(frames)
-      point += total_frames[index + 1][0]
-      point += total_frames[index + 1][1] || total_frames[index + 2][0]
+      point += next_frame[0]
+      point += next_frame[1] || second_next_frame[0]
     elsif spare?(frames)
-      point += total_frames[index + 1][0]
+      point += next_frame[0]
     end
   end
   point
