@@ -7,42 +7,33 @@ options = ARGV.getopts('alr')
 path = ARGV[0] || '.' # 引数がなければ"."で現在のディレクトリを返す
 
 def main(path, options = '')
+  p "メインは反応している"
   items = ruby_ls(path, options)
-  if options['l']
-    puts "total  #{calc_ls_total(path)}"
-    items.each do |item|
-      puts item.join('  ')
-    end
+if options['l']
+  p "lコマンド反応してる？"
+    generate_view_format_ls_l(items,path)
   else
-    print gnerate_print_item_str(items)
-    gnerate_print_item_str(items)
+    generate_view_format_ls(items)
   end
 end
 
 # ls-a
 def ruby_ls(path, options = '')
   items = []
-  if options['l'] && options['r']
-    # p 'lr反応しています'
+  if options['l'] && options['r'] && options['a']
+    items = ls_la(path).reverse
+  elsif options['l'] && options['r']
+    items = ls_l(path).reverse
+  elsif options['a'] && options['r']
+    items = ls_a(path).reverse
+  elsif options['l'] && options['a']
+    items = ls_la(path).reverse
   elsif options['a']
-    Dir.foreach(path).sort.each do |item|
-      items << item
-    end
-    # ls -l
+    items = ls_a(path)
   elsif options['l']
-    Dir.foreach(path).sort.each do |item|
-      item_path = File.absolute_path(item)
-      fs = File::Stat.new(item_path)
-      size = fs.size
-      atime = fs.atime.strftime('%_m %_d %R')
-      hard_link = fs.nlink
-      user = Etc.getpwuid(File.stat(item_path).uid).name
-      group_name = Etc.getgrgid(File.stat(item_path).gid).name
-      mode_symbol = make_symbol_mode(item)
-      items << [mode_symbol, hard_link.to_s, user, group_name, size.to_s, atime, item]
-    end
-
-    # ls
+    items = ls_l(path)
+  elsif options['r']
+    items = ls(path).reverse
   else
     items = ls(path)
   end
@@ -57,13 +48,22 @@ def get_count_max_filename(items)
   item_length.max
 end
 
-def gnerate_print_item_str(items)
+def generate_view_format_ls(items)
   item_max_length = get_count_max_filename(items) + 2
   formatted_item = ''
   items.each.with_index(1) do |item, index|
     formatted_item += item.ljust(item_max_length)
     formatted_item += "\n" if (index % 3).zero?
     formatted_item += "\n" if items.length == index && !(index % 3).zero? # 最後が３の倍数だったら改行を入れない。
+  end
+  formatted_item
+end
+
+def generate_view_format_ls_l(items,path)
+  formatted_item = "total  #{calc_ls_total(path)}\n"
+  items.each do |item|
+    formatted_item += item.join(' ')
+    formatted_item += "\n"
   end
   formatted_item
 end
@@ -103,7 +103,7 @@ end
 def calc_ls_total(path)
   blocks = 0
   Dir.foreach(path).sort.each do |item|
-    item_path = File.absolute_path(item)
+    p item_path = File.expand_path(item)
     fs = File::Stat.new(item_path)
     blocks += fs.blocks
   end
@@ -121,4 +121,45 @@ def ls(path)
   items
 end
 
-main(path, options) if __FILE__ == $PROGRAM_NAME
+def ls_a(path)
+  items = []
+  Dir.foreach(path).sort.each do |item|
+    items << item
+  end
+end
+
+def ls_l(path)
+  items = []
+  Dir.foreach(path).sort.each do |item|
+    next if (item == '.') || (item == '..')
+    next if item.start_with?('.')
+    item_path = File.absolute_path(item)
+    fs = File::Stat.new(item_path)
+    size = fs.size.to_s.rjust(6)
+    atime = fs.atime.strftime('%_m %_d %R')
+    hard_link = fs.nlink.to_s.rjust(3)
+    user = Etc.getpwuid(File.stat(item_path).uid).name
+    group_name = Etc.getgrgid(File.stat(item_path).gid).name
+    mode_symbol = make_symbol_mode(item)
+    items << [mode_symbol, hard_link, user, group_name, size, atime, item]
+  end
+  items
+end
+
+def ls_la(path)
+  items = []
+  Dir.foreach(path).sort.each do |item|
+    item_path = File.absolute_path(item)
+    fs = File::Stat.new(item_path)
+    size = fs.size.to_s.rjust(6)
+    atime = fs.atime.strftime('%_m %_d %R')
+    hard_link = fs.nlink.to_s.rjust(3)
+    user = Etc.getpwuid(File.stat(item_path).uid).name
+    group_name = Etc.getgrgid(File.stat(item_path).gid).name
+    mode_symbol = make_symbol_mode(item)
+    items << [mode_symbol, hard_link, user, group_name, size, atime, item]
+  end
+  items
+end
+
+print main(path, options) if __FILE__ == $PROGRAM_NAME
