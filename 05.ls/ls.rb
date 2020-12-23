@@ -7,11 +7,9 @@ options = ARGV.getopts('alr')
 path = ARGV[0] || '.' # 引数がなければ"."で現在のディレクトリを返す
 
 def main(path, options = '')
-  p "メインは反応している"
   items = ruby_ls(path, options)
-if options['l']
-  p "lコマンド反応してる？"
-    generate_view_format_ls_l(items,path)
+  if options['l']
+    generate_view_format_ls_l(items, path)
   else
     generate_view_format_ls(items)
   end
@@ -21,23 +19,22 @@ end
 def ruby_ls(path, options = '')
   items = []
   if options['l'] && options['r'] && options['a']
-    items = ls_la(path).reverse
+    ls_la(path).reverse
   elsif options['l'] && options['r']
-    items = ls_l(path).reverse
+    ls_l(path).reverse
   elsif options['a'] && options['r']
-    items = ls_a(path).reverse
+    ls_a(path).reverse
   elsif options['l'] && options['a']
-    items = ls_la(path).reverse
+    ls_la(path)
   elsif options['a']
-    items = ls_a(path)
+    ls_a(path)
   elsif options['l']
-    items = ls_l(path)
+    ls_l(path)
   elsif options['r']
-    items = ls(path).reverse
+    ls(path).reverse
   else
-    items = ls(path)
+    ls(path)
   end
-  items
 end
 
 def get_count_max_filename(items)
@@ -59,7 +56,7 @@ def generate_view_format_ls(items)
   formatted_item
 end
 
-def generate_view_format_ls_l(items,path)
+def generate_view_format_ls_l(items, path)
   formatted_item = "total  #{calc_ls_total(path)}\n"
   items.each do |item|
     formatted_item += item.join(' ')
@@ -68,8 +65,8 @@ def generate_view_format_ls_l(items,path)
   formatted_item
 end
 
-def make_symbol_mode(item)
-  item_path = File.absolute_path(item)
+def make_symbol_mode(item,path)
+  item_path = File.absolute_path(item,path)
   fs = File::Stat.new(item_path)
   file_type = fs.ftype
   mode = fs.mode.to_s(8)
@@ -103,7 +100,7 @@ end
 def calc_ls_total(path)
   blocks = 0
   Dir.foreach(path).sort.each do |item|
-    p item_path = File.expand_path(item)
+    item_path = File.expand_path(item,path)
     fs = File::Stat.new(item_path)
     blocks += fs.blocks
   end
@@ -133,14 +130,14 @@ def ls_l(path)
   Dir.foreach(path).sort.each do |item|
     next if (item == '.') || (item == '..')
     next if item.start_with?('.')
-    item_path = File.absolute_path(item)
+    item_path = File.absolute_path(item,path)
     fs = File::Stat.new(item_path)
     size = fs.size.to_s.rjust(6)
     atime = fs.atime.strftime('%_m %_d %R')
     hard_link = fs.nlink.to_s.rjust(3)
     user = Etc.getpwuid(File.stat(item_path).uid).name
     group_name = Etc.getgrgid(File.stat(item_path).gid).name
-    mode_symbol = make_symbol_mode(item)
+    mode_symbol = make_symbol_mode(item,path)
     items << [mode_symbol, hard_link, user, group_name, size, atime, item]
   end
   items
@@ -149,17 +146,18 @@ end
 def ls_la(path)
   items = []
   Dir.foreach(path).sort.each do |item|
-    item_path = File.absolute_path(item)
+    item_path = File.absolute_path(item,path)
     fs = File::Stat.new(item_path)
     size = fs.size.to_s.rjust(6)
     atime = fs.atime.strftime('%_m %_d %R')
     hard_link = fs.nlink.to_s.rjust(3)
     user = Etc.getpwuid(File.stat(item_path).uid).name
     group_name = Etc.getgrgid(File.stat(item_path).gid).name
-    mode_symbol = make_symbol_mode(item)
+    mode_symbol = make_symbol_mode(item,path)
     items << [mode_symbol, hard_link, user, group_name, size, atime, item]
   end
   items
 end
+
 
 print main(path, options) if __FILE__ == $PROGRAM_NAME
