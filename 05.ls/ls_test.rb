@@ -54,3 +54,4 @@ class LsTest < Minitest::Test
     assert_equal expected, main('./ls_test', { 'a' => true, 'l' => true, 'r' => true })
   end
 end
+

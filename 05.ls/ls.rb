@@ -39,8 +39,12 @@ def make_symbol_mode(item, path)
   other = mode[-1]
   group = mode[-2]
   owner = mode[-3]
+  file_type_hash(file_type) + mode_hash(owner) + mode_hash(group) + mode_hash(other)
+end
 
-  file_type_hash = {
+# もともとmake_symbol_modeに含まれていたがrobocopにtoo manyと言われたので切り出し。
+def file_type_hash(filetype)
+  {
     'fifo' => 'p',
     'characterSpecial' => 'c',
     'directory' => 'd',
@@ -48,9 +52,11 @@ def make_symbol_mode(item, path)
     'file' => '-',
     'link' => 'l',
     'socket' => 's'
-  }
+  }[filetype]
+end
 
-  mode_hash = {
+def mode_hash(integer)
+  {
     '0' => '---',
     '1' => '--x',
     '2' => '-w-',
@@ -59,8 +65,7 @@ def make_symbol_mode(item, path)
     '5' => 'r-x',
     '6' => 'rw-',
     '7' => 'rwx'
-  }
-  file_type_hash[file_type] + mode_hash[owner] + mode_hash[group] + mode_hash[other]
+  }[integer]
 end
 
 def calc_ls_total(path)
@@ -128,7 +133,7 @@ end
 
 # viewをオプション-lを用いる場合とそれ以外と２パターン用意した。
 def generate_view_format_ls(items)
-  item_max_length = items.max_by { |s| s.length }.length  + 2
+  item_max_length = items.max_by(&:length).length + 2
   formatted_item = ''
   items.each.with_index(1) do |item, index|
     formatted_item += item.ljust(item_max_length)
@@ -148,3 +153,4 @@ def generate_view_format_ls_l(items, path)
 end
 
 print main(path, options) if __FILE__ == $PROGRAM_NAME
+
