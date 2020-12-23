@@ -6,25 +6,26 @@ require './ls'
 class LsTest < Minitest::Test
   def test_ls
     expected = <<~TEXT
-      directory  foo.txt    readme#{'     '}
-      test.txt#{'   '}
+      directory  foo.txt    readme
+      test.txt
     TEXT
     assert_equal expected, main('./ls_test')
   end
 
   def test_ls_a
     expected = <<~TEXT
-      .          ..         .kakushi#{'   '}
-      directory  foo.txt    readme#{'     '}
-      test.txt#{'   '}
+      .          ..         .kakushi
+      directory  foo.txt    readme
+      test.txt
     TEXT
+    main('./ls_test', { 'a' => true, 'l' => false, 'r' => false })
     assert_equal expected, main('./ls_test', { 'a' => true, 'l' => false, 'r' => false })
   end
 
   def test_ls_r
     expected = <<~TEXT
-      test.txt   readme     foo.txt#{'    '}
-      directory#{'  '}
+      test.txt   readme     foo.txt
+      directory
     TEXT
     assert_equal expected, main('./ls_test', { 'a' => false, 'l' => false, 'r' => true })
   end

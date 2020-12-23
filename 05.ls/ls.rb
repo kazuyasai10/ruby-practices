@@ -137,8 +137,14 @@ def generate_view_format_ls(items)
   formatted_item = ''
   items.each.with_index(1) do |item, index|
     formatted_item += item.ljust(item_max_length)
-    formatted_item += "\n" if (index % 3).zero?
-    formatted_item += "\n" if items.length == index && !(index % 3).zero? # 最後が３の倍数だったら改行を入れない。
+    if (index % 3).zero?
+      formatted_item.strip!
+      formatted_item += "\n"
+    end
+    if items.length == index && !(index % 3).zero? # 最後が３の倍数だったら改行を入れない。
+      formatted_item.strip!
+      formatted_item += "\n"
+    end
   end
   formatted_item
 end
