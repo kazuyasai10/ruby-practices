@@ -21,7 +21,7 @@ def ruby_wc(path, options = '')
     str += line
     next unless file_argf.eof?
 
-    make_array_files(total_files,files, str, file_argf, options)
+    make_array_files(total_files, files, str, file_argf, options)
     total_line += str.lines.count
     if options['l'] == false
       total_word_count += str.split(/\s+/).size
@@ -43,7 +43,7 @@ def total_files(total_files, total_line, total_word_count, total_byte_size, opti
   total_files
 end
 
-def make_array_files(total_files,files, str, file_argf, options)
+def make_array_files(total_files, files, str, file_argf, options)
   files << str.lines.count
   if options['l'] == false
     files << str.split(/\s+/).size.to_s.rjust(6)
